@@ -14,34 +14,37 @@ using UnityEngine;
 [System.Serializable]
 public class Boundary
 {
-    public float xMin, xMax, zMin, zMax;                                    // Clamp our position between the values set for min and max on x and y axes
+    public float xMin, xMax, zMin, zMax;                                        // Clamp our position between the values set for min and max on x and y axes
 }
 
 public class PlayerController : MonoBehaviour {
 
     private Rigidbody rb;
-    public float speed;                                                     // Control the speed. Allow the ship to move more than 1 unit per second
-    public float tilt;                                                      // Add bank/tilt to the player ship, so it rotates on x axis
+    public float speed;                                                         // Control the speed. Allow the ship to move more than 1 unit per second
+    public float tilt;                                                          // Add bank/tilt to the player ship, so it rotates on x axis
     public Boundary boundary;
 
     public GameObject shot;
     public Transform shotSpawn;
 
-    public float fireRate;                                                  // Time gap between firing bullets
+    public float fireRate;                                                      // Time gap between firing bullets
     private float nextFire;
+    private Quaternion calibrationQuaternion;                                   // Quaternion value for mobile devide accelermeter input
 
-    private AudioSource audioSource;                                        // Add Player Weapon sound effect
+    private AudioSource audioSource;                                            // Add Player Weapon sound effect
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();                                     // Unity 5 can no longer access components using shorthand helper references
-        audioSource = GetComponent<AudioSource>();                          // Same for Audio
+        rb = GetComponent<Rigidbody>();                                         // Unity 5 can no longer access components using shorthand helper references
+        audioSource = GetComponent<AudioSource>();                              // Same for Audio
+
+        CallibrateAccelerometer();                                              // Set the accelerometer starting position for mobile device
     }
 
     private void Update()
     {
         //Instantiate(object, position, rotation);
-        //Instantiate(shot, shotSpawn.position, shotSpawn.rotation);        // Instantiate shot at shotSpawns position
+        //Instantiate(shot, shotSpawn.position, shotSpawn.rotation);            // Instantiate shot at shotSpawns position
         if (Input.GetButton("Fire1") & Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
@@ -53,19 +56,38 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FixedUpdate () {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        //       float moveHorizontal = Input.GetAxis("Horizontal");
+        //      float moveVertical = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical); // X, Y, Z
+       // Vector3 acceleration = Input.acceleration;                            // Ask input class to look at current device and get acceleration
+        Vector3 accelerationRaw = Input.acceleration;                           // Ask input class to look at current device and get acceleration
+        Vector3 acceleration = FixedAcceleration(accelerationRaw);              // Fix the acceleration
+        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);   // X, Y, Z Keyboard controls
+        Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);   // Input coming from mobile device, different orientation
         rb.velocity = movement * speed;
 
         // constrain the ship by setting the value of the rigidbodys position
         rb.position = new Vector3 (
-            Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),       // Math functions clamp, clamp the position of players ship inside game area
+            Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),           // Math functions clamp, clamp the position of players ship inside game area
             0.0f,
             Mathf.Clamp(rb.position.z, boundary.zMin, boundary.zMax)
             );
 
-        rb.rotation = Quaternion.Euler(0.0f, 0.0f, rb.velocity.x * -tilt);  // Multiply by negative tilt value so it tilts on Z axis when moving left/right on X axis, negative tilt sets correct direction
+        rb.rotation = Quaternion.Euler(0.0f, 0.0f, rb.velocity.x * -tilt);      // Multiply by negative tilt value so it tilts on Z axis when moving left/right on X axis, negative tilt sets correct direction
+    }
+
+    // Used to calibrate the Input.acceleration input
+    void CallibrateAccelerometer()
+    {
+        Vector3 accelerationSnapshot = Input.acceleration;
+        Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f, 0.0f, -1.0f), accelerationSnapshot);
+        calibrationQuaternion = Quaternion.Inverse(rotateQuaternion);
+    }
+
+    // Get the 'calibrated' value from the input
+    Vector3 FixedAcceleration (Vector3 acceleration)
+    {
+        Vector3 fixedAcceleration = calibrationQuaternion * acceleration;
+        return fixedAcceleration;
     }
 }
