@@ -26,8 +26,10 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject shot;
     public Transform shotSpawn;
-
     public float fireRate;                                                      // Time gap between firing bullets
+    public SimpleTouchPad touchpad;
+    public SimpleTouchAreaButton areaButton;                                    // Create area button
+
     private float nextFire;
     private Quaternion calibrationQuaternion;                                   // Quaternion value for mobile devide accelermeter input
 
@@ -45,8 +47,9 @@ public class PlayerController : MonoBehaviour {
     {
         //Instantiate(object, position, rotation);
         //Instantiate(shot, shotSpawn.position, shotSpawn.rotation);            // Instantiate shot at shotSpawns position
-        if (Input.GetButton("Fire1") & Time.time > nextFire)
-        {
+        //if (Input.GetButton("Fire1") & Time.time > nextFire)                  // Replaced with Firezone
+        if (areaButton.CanFire() & Time.time > nextFire)                        // If the Fire Zone is pressed
+            {
             nextFire = Time.time + fireRate;
             //GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;
             //GameObject clone = 
@@ -62,8 +65,11 @@ public class PlayerController : MonoBehaviour {
        // Vector3 acceleration = Input.acceleration;                            // Ask input class to look at current device and get acceleration
         Vector3 accelerationRaw = Input.acceleration;                           // Ask input class to look at current device and get acceleration
         Vector3 acceleration = FixedAcceleration(accelerationRaw);              // Fix the acceleration
-        //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);   // X, Y, Z Keyboard controls
-        Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);   // Input coming from mobile device, different orientation
+                                                                                //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);   // X, Y, Z Keyboard controls
+                                                                                //Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);   // Input coming from mobile device, different orientation
+
+        Vector2 direction = touchpad.GetDirection();
+        Vector3 movement = new Vector3(direction.x, 0.0f, direction.y);         // Grab direction from touchpad
         rb.velocity = movement * speed;
 
         // constrain the ship by setting the value of the rigidbodys position
