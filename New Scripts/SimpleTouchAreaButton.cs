@@ -33,7 +33,7 @@ public class SimpleTouchAreaButton : MonoBehaviour, IPointerDownHandler, IPointe
         // Reset everything
         if (data.pointerId == pointerID) {
             canFire = false;                                                                // When Fire Zone not touched we can't fire
-            touched = false;                                                                // Reset Fire Zone being touched
+            touched = false;                                                                // If the pointer goes up, reset Fire Zone being touched
         }
     }
 

@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
         //Instantiate(object, position, rotation);
         //Instantiate(shot, shotSpawn.position, shotSpawn.rotation);            // Instantiate shot at shotSpawns position
         //if (Input.GetButton("Fire1") & Time.time > nextFire)                  // Replaced with Firezone
-        if (areaButton.CanFire() & Time.time > nextFire)                        // If the Fire Zone is pressed
+        if (areaButton.CanFire() & Time.time > nextFire)                        // If the Fire Zone is pressed, and time to fire is true, can fire shot
             {
             nextFire = Time.time + fireRate;
             //GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;
