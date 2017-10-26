@@ -1,25 +1,32 @@
-﻿using System.Collections;
+﻿/*
+ * 22/10/2017
+ * Joe O'Regan
+ * K00203642
+ * 
+ * TextInput.cs
+ * 
+ * Allow the player to enter their name, 
+ * and stored if score is in high scores
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TextInput : MonoBehaviour {
 
-    public GameObject enableInputText;
-    public GameObject enablePlayer;
-    //public GameObject enablePlayerName;
-    public GameObject enableScore, enableScoreTable;
-    public GameObject enableFire, enableMove;
-    public InputField inputField;
-    //public GameObject inputField;
-    GameController controller;
+    public GameObject enableInputText;                              // Show/Hide the name entered
+    public GameObject enablePlayer;                                 // The player is hidden while text is entered, and revealed once name is set
+    public GameObject enableScore, enableScoreTable;                // Show the score and hide the score table when playing
+    public GameObject enableFire, enableMove;                       // Show/Hide the mobile controls depending on if building for mobile platform or not
+    public InputField inputField;                                   // Reference to the field for entering the Player name
+    GameController controller;                                      // Reference to the game controller
 
     private void Awake()
     {
-        controller = GetComponent<GameController>();
-        //controller.gameOverText.text = "Enter Your Name:";        // Update the game over text
-        inputField.onEndEdit.AddListener(AcceptStringInput);  
-        // controller.StartWaves();
+        controller = GetComponent<GameController>();                // Get the game controller
+        inputField.onEndEdit.AddListener(AcceptStringInput);        // When finished entering text call this function
         inputField.ActivateInputField();                            // Ready to accept keyboard input
     }
 
@@ -27,8 +34,7 @@ public class TextInput : MonoBehaviour {
     {
         controller.StartWaves();                                    // Start spawning waves of enemies
         controller.gameOverText.text = "";                          // Hide the game over message space
-        //userInput = userInput.ToLower();                          // Convert user input to lower case
-        controller.LogStringWithReturn(userInput);
+        controller.LogStringWithReturn(userInput);                  // If this is not here name is not entered correctly
 
         EnableDisableUI();                                          // Make UI elements visible after entering name
         InputComplete();                                            // Finished entering text
@@ -39,7 +45,6 @@ public class TextInput : MonoBehaviour {
         enableScoreTable.SetActive(false);                          // Display the high scores table
         enableInputText.SetActive(false);                           // Hide the Input Text field
         enablePlayer.SetActive(true);                               // Show the Player
-        //enablePlayerName.SetActive(true);                         // Show the Player Name
         enableScore.SetActive(true);                                // Show the score
 
 #if UNITY_ANDROID || UNITY_IPHONE
@@ -50,15 +55,10 @@ public class TextInput : MonoBehaviour {
 
     void InputComplete()
     {
-        controller.DisplayLoggedText();
-        inputField.ActivateInputField();
-        //inputField.DeactivateInputField();
-        inputField.text = null;
-        inputField.enabled = false;
-        //inputField.SetActive(false);
-        //DestroyImmediate(inputField);
-        ///inputField.DeactivateInputField();
-        //Destroy(inputField);    // doesn't work
-        //inputField.SetActive(false);
+        controller.DisplayLoggedText();                             // Display the name entered
+        inputField.ActivateInputField();                            // the input field is active
+        //inputField.DeactivateInputField();                        // Thought this might hide the Input field, added it as a game object to the game controller instead
+        inputField.text = null;                                     // Reset the inputField text
+        inputField.enabled = false;                                 // Unable to select the input field to enter text
     }
  }

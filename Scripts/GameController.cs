@@ -4,6 +4,8 @@
  * K00203642
  * 
  * GameController.cs
+ * 
+ * Main game controller
 */
 
 //using System;
@@ -17,15 +19,15 @@ using UnityEngine.SceneManagement;                              // SceneManager
 public class GameController : MonoBehaviour {
 
     //[HideInInspector]
-    public Text displayText;
-    public Text displayFinalScore;
-    public Text highScoresText;
+    public Text displayText;                                    // Show the players name at the top of the screen when entered
+    public Text displayFinalScore;                              // Display the final score in the center of the screen above the high scores
+    public Text highScoresText;                                 // Display the high scores from file(s)
 
     List<string> actionLog = new List<string>();
 
     //public GameObject hazard;
     public GameObject[] hazards;                                // Change to array of hazards
-    public Vector3 spawnValues;
+    public Vector3 spawnValues;                                 // Spawn hazards off screen, with a random x value, to spawn anywhere along the width of the screen
     public int hazardCount;                                     // Then number of hazards to create 
     public float spawnWait;                                     // Time to wait before spawning each hazard
     public float startWait;                                     // Time to wait before first wave of hazards begins at beginning of game
@@ -44,32 +46,24 @@ public class GameController : MonoBehaviour {
 
     private bool gameOver;                                      // Track when the game is over
     private bool restart;                                       // When it is OK to restart the game
-   // public bool getRestart() { return restart; }
     //public int score;                                         // Holds current score (score is always a whole number)
     private int currentScore;                                   // Does not need to display in game inspector
-    //private bool nameEntered;
     private string nameEntered; 
 
     void Start () {
-        //nameEntered = false;
-        gameOver = false;
+        gameOver = false;                                       // Game is not over
        // restart = false;
         //restartText.text = "";                                // Replaced with restart button
         restartButton.SetActive(false);                         // Turn restart button off at start of game
-        //gameOverText.text = "";                               // Game over text not displayed at start of game
         gameOverText.text = "Enter Your Name:";                 // Game over text not displayed at start of game
         currentScore = 0;                                       // Initialise score variable
         nameEntered = "";                                       // Initialise entered name string
         UpdateScore();                                          // Set score to the starting value
-        //SpawnWaves();
-        //if(nameEntered)
-        //StartCoroutine(SpawnWaves());                         // Need to explictaly call coroutine
-        //StartWaves();
-        HighScores();
+        HighScores();                                           // Show the high scores table
      }
 
     public void StartWaves() {
-        StartCoroutine(SpawnWaves());
+        StartCoroutine(SpawnWaves());                           // Start spawning the waves of hazards
     }
 
     // Update not required as restart button is now being used
@@ -106,7 +100,7 @@ public class GameController : MonoBehaviour {
             if (gameOver)
             {
                 //restartText.text = "Press 'R' for Restart";               // Restart the game by pressing R --> Replaced with restart button
-                restartButton.SetActive(true);
+                restartButton.SetActive(true);                              // Show the restart button
                 //restart = true;
                 break;
             }
@@ -127,11 +121,8 @@ public class GameController : MonoBehaviour {
 
     public void GameOver()
     {
-        //gameOverText.text = "Game Over " _+ hideNameText.guiText + "!";   // Update the game over text
-        //gameOverText.text = "Game Over " + displayText.text + "!";        // Update the game over text
         //string overMessage = "Game Over " + displayText.text + "!";       // Causes game to keep playing instead of ending????
         gameOverText.text = "Game Over!";                                   // Update the game over text
-        //gameOverText.text = overMessage;                                  // Update the game over text
 
         displayFinalScore.text = "Score For " + nameEntered + currentScore;
 
@@ -150,293 +141,172 @@ public class GameController : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void HighScores() {
-        /*
-        //Debug.Log("Scores Test");
-        highScoresText.text = "High Scores:\n";                             // reset the scores table
+    public void HighScores() {      
+        int[] scores = new int[11];                                                                     // Array of high scores
+        string[] names = new string[11];                                                                // Array of names for high scores
+                                                                                                        /*
+                                                                                                        // Read and show each line from the file.
+                                                                                                        string lineScore = "";
+                                                                                                        int i = 0;
+                                                                                                        string lineName = "";
 
-        FileStream F = new FileStream("HighScores.dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                                                                                        // Read scores and names from files
+                                                                                                        using (StreamReader sr = new StreamReader("scores.txt")) {                                      // Read scores from scores.txt
+                                                                                                            using (StreamReader sr2 = new StreamReader("names.txt")) {                                  // Read names from names.txt
 
-        //string[] swapText = new string[11];                               // Array of 10 scores + 1 for swapping
+                                                                                                                highScoresText.text = "High Scores:\n";   // reset the scores table
 
-        // Read the Scores
-        for (int i = 0; i < 10; i++)
-        {
-            highScoresText.text += F.ReadByte() + "\n";
-        }
+                                                                                                                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null)    // While there are lines of text to read
+                                                                                                                {
+                                                                                                                    int parseScore = System.Int32.Parse(lineScore);                                     // Parse the string to an int
+                                                                                                                    if (parseScore == 0) continue;                                                      // No need to display 0 value score
 
-        for (int i = 1; i <= 10; i++)
-        {
-            F.WriteByte((byte)i);
-        }
+                                                                                                                    scores[i] = parseScore;                                                             // Add the score to the scores array
+                                                                                                                    names[i++] = lineName;                                                              // Add name to names array, and increment i by 1
 
-        F.Position = 0;
+                                                                                                                    Debug.Log(lineName + "  " + lineScore + "\n");
+                                                                                                                    //highScoresText.text += i + ". " + lineScore + " " + lineName + "\n";
+                                                                                                                    highScoresText.text += i + ". " + lineName + " " + lineScore + "\n";                // will be one, i has already incremented
+                                                                                                                }
 
-        for (int i = 0; i < 10; i++)
-        {
-            //Console.Write(F.ReadByte() + " ");
-            //Debug.Log(F.ReadByte() + " ");
-            highScoresText.text += F.ReadByte() + "\n";
-        }
+                                                                                                                Debug.Log("Name and Scores Arrays:\n");
+                                                                                                                for (int j = 0; j < 10; j++)
+                                                                                                                {
+                                                                                                                    if (scores[j] == 0) continue;                                                       // skip 0 values for score
+                                                                                                                    Debug.Log(names[j] + " " + scores[j] + "\n");                                       // Display the names and scores in Unity console
+                                                                                                                }
 
-        F.Close();  // Close the file
-                    //Console.ReadKey();
+                                                                                                                int n = 11, tempScore = 0;
+                                                                                                                string tempName = "";
 
-        */
-        
-        /*
-        // READ TEXT FILE
+                                                                                                                scores[10] = currentScore;                                                              // Set the 11th score to the current score
+                                                                                                                names[10] = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", ""); // remove new line character
 
-        // Create an instance of StreamReader to read from a file.
-        // The using statement also closes the StreamReader.
-        //using (StreamReader sr = new StreamReader("c:/test.txt"))
-        using (StreamReader sr = new StreamReader("test.txt"))
-        {
-            string line;
+                                                                                                                Debug.Log("\nAdded current name and score:\n");
+                                                                                                                for (int s = 0; s < 11; s++)
+                                                                                                                {
+                                                                                                                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");                            // Check the current name and score is added
+                                                                                                                }
 
-            // Read and display lines from the file until 
-            // the end of the file is reached. 
-            while ((line = sr.ReadLine()) != null)
-            {
-                Debug.Log(line);
-            }
-        }
-        */
+                                                                                                                Debug.Log("\nCurrent Name and Score: " + nameEntered + currentScore);
 
-        // READ / WRITE TEXT FILE
+                                                                                                                // Swap the scores
+                                                                                                                for (int x = 1; x < n; x++)                                                             // Check all the scores
+                                                                                                                {
+                                                                                                                    for (int y = 0; y < n - x; y++)                                                     // Against every other score
+                                                                                                                    {
+                                                                                                                        if (scores[y] < scores[y + 1])                                                  // Sorting the largest score first
+                                                                                                                        {
+                                                                                                                            tempScore = scores[y];                                                      // Do swapping
+                                                                                                                            tempName = names[y];
 
-        //int[] scores = new int[11];
-        //     string[] name = new string[11];
+                                                                                                                            scores[y] = scores[y + 1];
+                                                                                                                            names[y] = names[y + 1];
 
-        /*
-        string[] scoreString = new string[] { "20 player 1", "10 player 2" };
+                                                                                                                            scores[y + 1] = tempScore;
+                                                                                                                            names[y + 1] = tempName;
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
 
-        using (StreamWriter sw = new StreamWriter("scoresAndNames.txt"))
-        {
-            foreach (string s in scoreString)
-            {
-                sw.WriteLine(s);
-            }
-        }
-        */
-        /*
-             // Read and show each line from the file.
-             string lineScore = "";
-             int i = 0;
-             using (StreamReader sr = new StreamReader("scores.txt"))
-             {
-                 while ((lineScore = sr.ReadLine()) != null)
-                 {
-                     scores[i++] = System.Int32.Parse(lineScore);
-                     //Console.WriteLine(lineScore);
-                     Debug.Log(i + scores[i] + "\n");
+                                                                                                                Debug.Log("\nSorted High Scores:\n");
+                                                                                                                for (int s = 0; s < 11; s++)                                                            // Check the scores are sorted correctly
+                                                                                                                {
+                                                                                                                    if (scores[s] == 0) continue;                                                       // skip 0 values for score
+                                                                                                                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");                            // Display the name and score
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                        */
 
-                 }
-             }
+        DisplayHighScores(scores, names);                                                                   // Read and display the high scores table
 
-             string lineName = "";
-             using (StreamReader sr = new StreamReader("names.txt"))
-             {
-                 while ((lineName = sr.ReadLine()) != null)
-                 {
-                     //Console.WriteLine(line);
-                     Debug.Log(lineName);
-                 }
-             } */
-
-        // Read and show each line from the file.
-        string lineScore = "";
-        int i = 0;
-        string lineName = "";
-
-        int[] scores = new int[11];
-        string[] names = new string[11];
-
-        // Read scores and names from files
-        using (StreamReader sr = new StreamReader("scores.txt")) {
-            using (StreamReader sr2 = new StreamReader("names.txt")) {
-                /*
-                while ((lineName = sr2.ReadLine()) != null || (lineScore = sr.ReadLine()) != null) {
-                    scores[i++] = System.Int32.Parse(lineScore);
-                    Debug.Log(lineName);
-                    Debug.Log(i + scores[i] + "\n");
-                }*/
-
-                highScoresText.text = "High Scores:\n";   // reset the scores table
-
-                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null)
-                {
-                    //scores[i] = System.Int32.Parse(lineScore);      // dont increment i here dumbass
-                    int parseScore = System.Int32.Parse(lineScore);
-                    if (parseScore == 0) continue;
-
-                    scores[i] = parseScore;
-                    names[i++] = lineName;                          // add name and increment i
-
-                    Debug.Log(lineName + "  " + lineScore + "\n");
-                    highScoresText.text += i + ". " + lineScore + " " + lineName + "\n";    // will be one, i has already incremented
-                }
-
-                Debug.Log("Name and Scores Arrays:\n");
-                for (int j = 0; j < 10; j++)
-                {
-                    // if (scores[j] == 0) continue;                       // skip 0 values for score
-                    Debug.Log(names[j] + " " + scores[j] + "\n");
-                }
-
-                int n = 11, tempScore = 0;
-                string tempName = "";
-
-                scores[10] = currentScore;  // Set the 11th score to the current score
-                //names[10] = nameEntered;    // Set the 11th name to the name entered
-                //string replacement = System.Text.RegularExpressions.Regex.Replace(names[10], @"\t|\n|\r", "");
-                names[10] = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", "");  // remove new line character
-                Debug.Log("\nCurrent name in names array:" + names[10] + "\n");
-                Debug.Log("\nAdded current name and score:\n");
-
-                for (int s = 0; s < 11; s++)
-                {
-                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");
-                }
-
-                Debug.Log("Current Score: " + currentScore + "\n");
-                string nameAndScore = " " + currentScore + "\n";
-                Debug.Log("\nCurrent Name and Score: " + nameEntered + nameAndScore);
-
-                // Swap the scores
-                for (int x = 1; x < n; x++)
-                {
-                    for (int y = 0; y < n - x; y++)
-                    {
-                        if (scores[y] < scores[y + 1]) // sorts largest first
-                        {
-                            tempScore = scores[y];
-                            tempName = names[y];
-
-                            scores[y] = scores[y + 1];
-                            names[y] = names[y + 1];
-
-                            scores[y + 1] = tempScore;
-                            names[y + 1] = tempName;
-                        }
-                    }
-                }
-
-                Debug.Log("\nSorted High Scores:\n");
-
-                for (int s = 0; s < 11; s++)
-                {
-                    //if (scores[j] == 0) continue;                       // skip 0 values for score
-                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");
-                }
-                /*
-                while ((lineScore = sr.ReadLine()) != null) {
-                    scores[i++] = System.Int32.Parse(lineScore);
-                    //Console.WriteLine(lineScore);
-                    Debug.Log(i + scores[i] + "\n");
-                } */
-            }
-        }
-        
-        // write to file
+        // Write the names and score to separate files (Was the simplest solution)
         using (StreamWriter sw = new StreamWriter("scores.txt")) {
             //foreach (int s in scores)
-            for (int s = 0; s < 10;s++) // Make sure only 10 scores are output to file
+            for (int s = 0; s < 10;s++)                                                                     // Make sure only 10 scores are output to file
             {
                 sw.WriteLine(scores[s]);
             }
         }
         using (StreamWriter sw = new StreamWriter("names.txt")) {
-            foreach (string s in names) {   // There wasn't any need to change this one
+            foreach (string s in names) {                                                                   // There wasn't any need to change this one
                 sw.WriteLine(s);
             }
         }
-        /*
-        i = 0;
-        using (StreamReader sr = new StreamReader("scores.txt")) {
-            using (StreamReader sr2 = new StreamReader("names.txt")) {
-                highScoresText.text = "High Scores:\n";   // reset the scores table
-                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null) {
-                    //scores[i] = System.Int32.Parse(lineScore);      // dont increment i here dumbass
-                    int parseScore = System.Int32.Parse(lineScore);
-                    if (parseScore == 0) continue;
 
-                    scores[i] = parseScore;
-                    names[i++] = lineName;                          // add name and increment i
-
-                    //Debug.Log(lineName + "  " + lineScore + "\n");
-                    highScoresText.text += i + ". " + lineScore + " " + lineName + "\n";    // will be one, i has already incremented
-                }
-            }
-        }
-        */
-        DisplayHighScores(scores, names);
     }
 
-    void DisplayHighScores(int[] arrScore, string[] arrString) {
+    void DisplayHighScores(int[] arrScores, string[] arrNames) {
         int i = 0;
         string lineName = "", lineScore = "";
+        int n = 11, tempScore = 0;
+        string tempName = "";
 
-        using (StreamReader sr = new StreamReader("scores.txt"))
+        // Read the names and scores from file, and to array
+        using (StreamReader sr = new StreamReader("scores.txt"))                                            // Read the scores from the scores.txt file
         {
-            using (StreamReader sr2 = new StreamReader("names.txt"))
+            using (StreamReader sr2 = new StreamReader("names.txt"))                                        // Read the names from the names.txt file
             {
-                highScoresText.text = "High Scores:\n";   // reset the scores table
-                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null)
+                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null)        // While there are lines to read in the files
                 {
-                    int parseScore = System.Int32.Parse(lineScore);
-                    if (parseScore == 0) continue;
+                    int parseScore = System.Int32.Parse(lineScore);                                         // parse the score from each line in scores.txt
+                    if (parseScore == 0) continue;                                                          // if the score is 0 skip the rest
+                    
+                    arrScores[i] = parseScore;                                                              // Add the score to the scores array
+                    arrNames[i++] = lineName;                                                               // add name to names array, and increment i                    
+                }                
 
-                    //scores[i] = parseScore;
-                    //names[i++] = lineName;
-                    arrScore[i] = parseScore;
-                    arrString[i++] = lineName;                                                          // add name and increment i
+                // Add the current name and score to position 11 of the high scores list
+                arrScores[10] = currentScore;                                                               // Set the 11th score to the current score
+                arrNames[10] = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", "");  // remove new line character
 
-                    //Debug.Log(lineName + "  " + lineScore + "\n");
-                    highScoresText.text += i + ". " + lineScore + " " + lineName + "\n";                // will be one, i has already incremented
+                if (currentScore > arrScores[0])
+                    highScoresText.text = "New High Score:\n";                                              // Reset the scores table beginning with new high score message
+                else
+                    highScoresText.text = "High Scores:\n";                                                 // Reset the scores table
+
+                // Swap the scores
+                for (int x = 1; x < n; x++)                                                                 // Check all the scores
+                {
+                    for (int y = 0; y < n - x; y++)                                                         // Against every other score
+                    {
+                        if (arrScores[y] < arrScores[y + 1])                                                // Sorting the largest score first
+                        {
+                            tempScore = arrScores[y];                                                       // Do swapping
+                            tempName = arrNames[y];
+
+                            arrScores[y] = arrScores[y + 1];
+                            arrNames[y] = arrNames[y + 1];
+
+                            arrScores[y + 1] = tempScore;
+                            arrNames[y + 1] = tempName;
+                        }
+                    }
+                }
+
+                // Display updated scores
+                for (int z = 0; z < 10; z++)
+                {
+                    highScoresText.text += (z+1) + ". " + arrNames[z] + " " + arrScores[z] + "\n";          // 1st line Will be one, i has already incremented, showing name and score
                 }
             }
         }
     }
 
-
+    
     // From text adventure tutorial
     public void LogStringWithReturn(string stringToAdd)
     {
-        //nameEntered = true;
-        //StartCoroutine(SpawnWaves());
-
         actionLog.Add(stringToAdd + "\n");
-        //gameOverText.text = "";                                   // Update the game over text
-        //nameEntered = true;
     }
-
+    
     public void DisplayLoggedText()
     {
-       // hideNameText.SetActive(true);
-        //displayText.text = logAsText;
-
         // string logAsText = string.Join("\n", actionLog.ToArray());
         nameEntered = string.Join("\n", actionLog.ToArray());
-        //displayText.text = "Player: " + logAsText;
-        displayText.text = nameEntered;
-        //displayText.text = "test";
+        displayText.text = nameEntered;                                                                     // Set the name at the top of the screen to the name entered
 
-        gameOverText.text = "";                                     // Update the game over text
+        gameOverText.text = "";                                                                             // Update the game over text
     }
-    /*
-    public void GetPlayerName() {
-        gameOverText.text = "Enter Name:";                          // Update the game over text
-    }
-
-    public void FinishedName()
-    {
-        gameOverText.text = "";                                     // Update the game over text
-    }
-
-    public void nameDone() {
-        //nameEntered = true;
-        StartCoroutine(SpawnWaves());
-    }
-    */
 }

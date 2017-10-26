@@ -4,6 +4,8 @@
  * K00203642
  * 
  * RandomRotator.cs
+ * 
+ * Randomly rotate asteroids
 */
 
 using System.Collections;

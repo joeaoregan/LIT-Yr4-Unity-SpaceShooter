@@ -1,4 +1,13 @@
-﻿using System.Collections;
+﻿/*
+ * Joe O'Regan
+ * K00203642
+ * 
+ * WeaponController.cs
+ * 
+ * Control the enemy ship bolt firing
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

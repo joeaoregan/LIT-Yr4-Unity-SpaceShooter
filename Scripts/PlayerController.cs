@@ -4,6 +4,8 @@
  * K00203642
  * 
  * PlayerController.cs
+ * 
+ * Handle player movement and firing
 */
 
 using System.Collections;

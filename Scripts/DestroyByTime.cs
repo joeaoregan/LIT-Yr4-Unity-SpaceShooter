@@ -14,6 +14,6 @@ public class DestroyByTime : MonoBehaviour {
     public float lifetime;                      // Wait before object is destroyed
 
 	void Start () {
-        Destroy(gameObject, lifetime);    // When the gameObject is instantiated it will destroy itself when time is up
+        Destroy(gameObject, lifetime);          // When the gameObject is instantiated it will destroy itself when time is up
 	}	
 }

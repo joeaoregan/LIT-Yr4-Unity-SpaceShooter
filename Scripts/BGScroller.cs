@@ -1,12 +1,21 @@
-﻿using System.Collections;
+﻿/*
+ * Joe O'Regan
+ * K00203642
+ * 
+ * BGScroller.cs
+ * 
+ * Control the backgrounds scrolling movement
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BGScroller : MonoBehaviour {
-    public float scrollSpeed;       // Speed of background scrolling
-    public float tileSizeZ;         // Size of background
+    public float scrollSpeed;                                                   // Speed of background scrolling
+    public float tileSizeZ;                                                     // Size of background
 
-    private Vector3 startPosition;  // Position to start scrolling from
+    private Vector3 startPosition;                                              // Position to start scrolling from
 
     private void Start()
     {

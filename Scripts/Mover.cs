@@ -4,6 +4,8 @@
  * K00203642
  * 
  * Mover.cs
+ * 
+ * Control the bolt objects movement, moving them forward by the speed that can be set in the editor
 */
 
 //using System.Collections.Generic;
@@ -13,7 +15,7 @@ using System.Collections;
 public class Mover : MonoBehaviour {
 
     //private Rigidbody rb;
-   // public float speed;             // Set the Bolt speed
+   // public float speed;                                               // Set the Bolt speed
    /*
     // Use this for initialization
     void Start()
@@ -33,6 +35,6 @@ public class Mover : MonoBehaviour {
 
     void Start()
     {
-        GetComponent<Rigidbody>().velocity = transform.forward * speed;
+        GetComponent<Rigidbody>().velocity = transform.forward * speed; // Move forward by the set speed
     }
 }

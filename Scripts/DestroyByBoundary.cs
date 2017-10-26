@@ -4,6 +4,8 @@
  * K00203642
  * 
  * DestroyByBoundary.cs
+ * 
+ * When a game object comes in contact with the boundary, destroy it
 */
 
 using System.Collections;
