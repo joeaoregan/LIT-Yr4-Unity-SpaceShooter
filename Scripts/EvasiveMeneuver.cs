@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿/*
+ * Joe O'Regan
+ * K00203642
+ * 
+ * PlayerController.cs
+ * Space Shooter Unity Tutorial
+ * 
+ * Handle player movement and firing
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

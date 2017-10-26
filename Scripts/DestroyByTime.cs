@@ -4,6 +4,9 @@
  * K00203642
  * 
  * DestroyByTime.cs
+ * Space Shooter Unity Tutorial
+ * 
+ * Destroy an object after specified time has elapsed
 */
 
 using System.Collections;

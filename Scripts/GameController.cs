@@ -1,9 +1,10 @@
 ﻿/*
  * 20/09/2017
- * Joe O'Regan
- * K00203642
+ * Modified by: Joe O'Regan
+ *              K00203642
  * 
  * GameController.cs
+ * Space Shooter Unity Tutorial
  * 
  * Main game controller
 */
@@ -17,6 +18,8 @@ using UnityEngine.UI;                                           // For text on c
 using UnityEngine.SceneManagement;                              // SceneManager
 
 public class GameController : MonoBehaviour {
+
+    //private HighScores hs;                                       // Reference to highscores
 
     //[HideInInspector]
     public Text displayText;                                    // Show the players name at the top of the screen when entered
@@ -48,7 +51,11 @@ public class GameController : MonoBehaviour {
     private bool restart;                                       // When it is OK to restart the game
     //public int score;                                         // Holds current score (score is always a whole number)
     private int currentScore;                                   // Does not need to display in game inspector
-    private string nameEntered; 
+    private string nameEntered;
+
+    public string getName(){ return nameEntered; }              // Get the players name
+    public int getScore() { return currentScore; }              // Get the current score
+    public bool isGameOver() { return gameOver; }               // Is the game over or not?
 
     void Start () {
         gameOver = false;                                       // Game is not over
@@ -59,8 +66,9 @@ public class GameController : MonoBehaviour {
         currentScore = 0;                                       // Initialise score variable
         nameEntered = "";                                       // Initialise entered name string
         UpdateScore();                                          // Set score to the starting value
-        HighScores();                                           // Show the high scores table
-     }
+        //HighScores();                                         // Show the high scores table
+        //hs.CheckHighScores(nameEntered, currentScore);
+    }
 
     public void StartWaves() {
         StartCoroutine(SpawnWaves());                           // Start spawning the waves of hazards
@@ -109,6 +117,7 @@ public class GameController : MonoBehaviour {
 
     public void AddScore(int newScoreValue)
     {
+        if(!gameOver)
         currentScore += newScoreValue;                                      // Update the score value
         UpdateScore();                                                      // Update the score text to current score
     }
@@ -124,10 +133,14 @@ public class GameController : MonoBehaviour {
         //string overMessage = "Game Over " + displayText.text + "!";       // Causes game to keep playing instead of ending????
         gameOverText.text = "Game Over!";                                   // Update the game over text
 
-        displayFinalScore.text = "Score For " + nameEntered + currentScore;
+        displayFinalScore.text = "Score For " + getName() + getScore();
 
         gameOver = true;                                                    // The game is over
-        HighScores();                                                       // Check if scores is in high scores, and display new high scores
+
+        //HighScores();                                                       // Check if scores is in high scores, and display new high scores
+
+        nameEntered = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", ""); // remove new line character
+        //hs.CheckHighScores(nameEntered, currentScore);
 
         enableScoreTable.SetActive(true);                                   // Display the high scores table
         enableFinalScoreText.SetActive(true);                               // Display the final score

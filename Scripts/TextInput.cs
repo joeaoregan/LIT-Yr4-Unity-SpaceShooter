@@ -1,9 +1,10 @@
 ﻿/*
  * 22/10/2017
- * Joe O'Regan
- * K00203642
+ * Modified by: Joe O'Regan
+ *              K00203642
  * 
  * TextInput.cs
+ * Text Adventure Unity Tutorial
  * 
  * Allow the player to enter their name, 
  * and stored if score is in high scores

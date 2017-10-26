@@ -1,9 +1,10 @@
 ﻿/*
  * 20/09/2017
- * Joe O'Regan
- * K00203642
+ * Modified by: Joe O'Regan
+ *              K00203642
  * 
  * PlayerController.cs
+ * Space Shooter Unity Tutorial
  * 
  * Handle player movement and firing
 */

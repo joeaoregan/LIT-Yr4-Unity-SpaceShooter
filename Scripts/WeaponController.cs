@@ -3,6 +3,7 @@
  * K00203642
  * 
  * WeaponController.cs
+ * Space Shooter Unity Tutorial
  * 
  * Control the enemy ship bolt firing
 */

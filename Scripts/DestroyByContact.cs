@@ -4,6 +4,7 @@
  * K00203642
  * 
  * DestroyByContacts.cs
+ * Space Shooter Unity Tutorial
  * 
  * For contact between the enemy bolt and other objects, 
  * check its not an enemy or the boundary and destroy

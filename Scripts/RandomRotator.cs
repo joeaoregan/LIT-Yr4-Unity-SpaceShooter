@@ -4,6 +4,7 @@
  * K00203642
  * 
  * RandomRotator.cs
+ * Space Shooter Unity Tutorial
  * 
  * Randomly rotate asteroids
 */

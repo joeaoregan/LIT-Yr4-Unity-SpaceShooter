@@ -4,6 +4,7 @@
  * K00203642
  * 
  * DestroyByBoundary.cs
+ * Space Shooter Unity Tutorial
  * 
  * When a game object comes in contact with the boundary, destroy it
 */

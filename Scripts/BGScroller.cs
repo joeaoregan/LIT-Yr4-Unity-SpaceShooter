@@ -3,6 +3,7 @@
  * K00203642
  * 
  * BGScroller.cs
+ * Space Shooter Unity Tutorial
  * 
  * Control the backgrounds scrolling movement
 */
