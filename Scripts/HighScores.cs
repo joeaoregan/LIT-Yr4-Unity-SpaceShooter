@@ -42,14 +42,14 @@ public class HighScores : MonoBehaviour {
         }
 
         // Get the players name and score from game controller and display high scores table
-        CheckHighScores(gameController.getName(), gameController.getScore());                   // Check the high score
+        CheckHighScores(gameController.GetName(), gameController.GetScore());                   // Check the high score
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (gameController.isGameOver() && !scoresDisplayed)                                                        // If the game is over
+        if (gameController.IsGameOver() && !scoresDisplayed)                                                        // If the game is over
         {
-            CheckHighScores(gameController.getName(), gameController.getScore());               // Get the players name and score from game controller and display high scores table
+            CheckHighScores(gameController.GetName(), gameController.GetScore());               // Get the players name and score from game controller and display high scores table
 
             scoresDisplayed = true;
         }

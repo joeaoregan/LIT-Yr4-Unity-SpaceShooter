@@ -27,8 +27,17 @@ public class TextInput : MonoBehaviour {
     private void Awake()
     {
         controller = GetComponent<GameController>();                // Get the game controller
-        inputField.onEndEdit.AddListener(AcceptStringInput);        // When finished entering text call this function
-        inputField.ActivateInputField();                            // Ready to accept keyboard input
+
+        if (PlayerPrefs.GetInt("New Player") == 1)                  // Restart the game, without entering a players name
+        {
+            EnableDisableUI();                                      // Enable the User Interface
+            controller.StartWaves();                                // Start the wave of hazards
+        }
+        else
+        {
+            inputField.onEndEdit.AddListener(AcceptStringInput);    // When finished entering text call this function
+            inputField.ActivateInputField();                        // Ready to accept keyboard input
+        }
     }
 
     void AcceptStringInput(string userInput)

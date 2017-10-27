@@ -7,6 +7,11 @@
  * Space Shooter Unity Tutorial
  * 
  * Main game controller
+ * 
+ * Added entering names and storing names and high scores
+ * Added reset button for new player, to change name so player
+ * doesn't have to enter name every time
+ * Added exit button
 */
 
 //using System;
@@ -19,10 +24,10 @@ using UnityEngine.SceneManagement;                              // SceneManager
 
 public class GameController : MonoBehaviour {
 
-    //private HighScores hs;                                       // Reference to highscores
+    //private HighScores hs;                                    // Reference to highscores
 
     //[HideInInspector]
-    public Text displayText;                                    // Show the players name at the top of the screen when entered
+    public Text displayName;                                    // Show the players name at the top of the screen when entered
     public Text displayFinalScore;                              // Display the final score in the center of the screen above the high scores
     public Text highScoresText;                                 // Display the high scores from file(s)
 
@@ -41,7 +46,10 @@ public class GameController : MonoBehaviour {
     //public GUIText restartText;                               // Replaced with button  
     //public GUIText gameOverText;                              // Game Over Message
     public Text gameOverText;                                   // Game Over message moved to UI canvas
+
     public GameObject restartButton;                            // Restart button replaces restart text
+    public GameObject restartNewPlayerButton;                   // Restart button replaces restart text
+    public GameObject exitButton;                               // Restart button replaces restart text
     public GameObject hideNameText;                             // Hide the name text
     public GameObject enableFinalScoreText;                     // Show/Hide the final score text
     public GameObject hideScore;                                // Show/Hide the score
@@ -51,23 +59,48 @@ public class GameController : MonoBehaviour {
     private bool restart;                                       // When it is OK to restart the game
     //public int score;                                         // Holds current score (score is always a whole number)
     private int currentScore;                                   // Does not need to display in game inspector
-    private string nameEntered;
+    private string nameEntered;                                 // The players name entered
+   // private bool newPlayer;                                   // Reset the game entering a new name
 
-    public string getName(){ return nameEntered; }              // Get the players name
-    public int getScore() { return currentScore; }              // Get the current score
-    public bool isGameOver() { return gameOver; }               // Is the game over or not?
+    public string GetName(){ return nameEntered; }              // Get the players name
+    public int GetScore() { return currentScore; }              // Get the current score
+    public bool IsGameOver() { return gameOver; }               // Is the game over or not?
 
     void Start () {
         gameOver = false;                                       // Game is not over
-       // restart = false;
-        //restartText.text = "";                                // Replaced with restart button
+
         restartButton.SetActive(false);                         // Turn restart button off at start of game
-        gameOverText.text = "Enter Your Name:";                 // Game over text not displayed at start of game
+        restartNewPlayerButton.SetActive(false);                // Turn restart with new player button off at start of game
+        exitButton.SetActive(false);                            // Turn exit button off at start of game
+
+        Debug.Log("New Player: " + PlayerPrefs.GetInt("New Player"));
+        Debug.Log("Stored Name: " + PlayerPrefs.GetString("Player Name"));
+
+        if (PlayerPrefs.GetInt("New Player") == 1)              // Restart the game, without entering a players name
+        {
+            gameOverText.text = "";                             // Game over text not displayed at start of game
+            nameEntered = PlayerPrefs.GetString("Player Name"); // The players name stored from previous game
+            displayName.text = nameEntered;
+            hideScore.SetActive(true);                          // Show the score at top of screen
+
+            PlayerPrefs.SetInt("New Player", 0);                // and the player name
+            //enableScoreTable.SetActive(false);                // Display the high scores table
+            // enableFinalScoreText.SetActive(false);           // Display the final score
+            // hideNameText.SetActive(false);                   // Hide the Player name at top of screen
+        }
+        else
+        {
+            gameOverText.text = "Enter Your Name:";             // Game over text not displayed at start of game
+            nameEntered = "";                                   // Initialise entered name string
+            hideScore.SetActive(false);                         // Hide the score at top of screen
+
+            enableScoreTable.SetActive(true);                   // Display the high scores table
+           // enableFinalScoreText.SetActive(true);             // Display the final score
+            //hideNameText.SetActive(false);                    // Hide the Player name at top of screen
+        }
+
         currentScore = 0;                                       // Initialise score variable
-        nameEntered = "";                                       // Initialise entered name string
         UpdateScore();                                          // Set score to the starting value
-        //HighScores();                                         // Show the high scores table
-        //hs.CheckHighScores(nameEntered, currentScore);
     }
 
     public void StartWaves() {
@@ -109,6 +142,8 @@ public class GameController : MonoBehaviour {
             {
                 //restartText.text = "Press 'R' for Restart";               // Restart the game by pressing R --> Replaced with restart button
                 restartButton.SetActive(true);                              // Show the restart button
+                restartNewPlayerButton.SetActive(true);                     // Show restart with new player button
+                exitButton.SetActive(true);                                 // Show exit button
                 //restart = true;
                 break;
             }
@@ -133,14 +168,11 @@ public class GameController : MonoBehaviour {
         //string overMessage = "Game Over " + displayText.text + "!";       // Causes game to keep playing instead of ending????
         gameOverText.text = "Game Over!";                                   // Update the game over text
 
-        displayFinalScore.text = "Score For " + getName() + getScore();
+        displayFinalScore.text = "Score For " + GetName() + GetScore();
 
         gameOver = true;                                                    // The game is over
 
-        //HighScores();                                                       // Check if scores is in high scores, and display new high scores
-
         nameEntered = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", ""); // remove new line character
-        //hs.CheckHighScores(nameEntered, currentScore);
 
         enableScoreTable.SetActive(true);                                   // Display the high scores table
         enableFinalScoreText.SetActive(true);                               // Display the final score
@@ -150,87 +182,27 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
+        //PlayerPrefs.SetInt("New Player", 1);                              // Restart game skipping enter name option
+        PlayerPrefs.SetString("Player Name", GetName());                    // Store the current Player name
         //Application.LoadLevel(Application.loadedLevel);                   // Restart the current level
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);   // Load the same scene
+    }
+
+    public void RestartGameSkipNewPlayer()
+    {
+        //PlayerPrefs.SetString("Player Name", GetName());                  // Store the current Player name
+        PlayerPrefs.SetInt("New Player", 1);                                // and the player name
+        RestartGame();
+    }
+
+    public void ExitGame( )
+    {
+        Application.Quit();
     }
 
     public void HighScores() {      
-        int[] scores = new int[11];                                                                     // Array of high scores
-        string[] names = new string[11];                                                                // Array of names for high scores
-                                                                                                        /*
-                                                                                                        // Read and show each line from the file.
-                                                                                                        string lineScore = "";
-                                                                                                        int i = 0;
-                                                                                                        string lineName = "";
-
-                                                                                                        // Read scores and names from files
-                                                                                                        using (StreamReader sr = new StreamReader("scores.txt")) {                                      // Read scores from scores.txt
-                                                                                                            using (StreamReader sr2 = new StreamReader("names.txt")) {                                  // Read names from names.txt
-
-                                                                                                                highScoresText.text = "High Scores:\n";   // reset the scores table
-
-                                                                                                                while (((lineName = sr2.ReadLine()) != null) && (lineScore = sr.ReadLine()) != null)    // While there are lines of text to read
-                                                                                                                {
-                                                                                                                    int parseScore = System.Int32.Parse(lineScore);                                     // Parse the string to an int
-                                                                                                                    if (parseScore == 0) continue;                                                      // No need to display 0 value score
-
-                                                                                                                    scores[i] = parseScore;                                                             // Add the score to the scores array
-                                                                                                                    names[i++] = lineName;                                                              // Add name to names array, and increment i by 1
-
-                                                                                                                    Debug.Log(lineName + "  " + lineScore + "\n");
-                                                                                                                    //highScoresText.text += i + ". " + lineScore + " " + lineName + "\n";
-                                                                                                                    highScoresText.text += i + ". " + lineName + " " + lineScore + "\n";                // will be one, i has already incremented
-                                                                                                                }
-
-                                                                                                                Debug.Log("Name and Scores Arrays:\n");
-                                                                                                                for (int j = 0; j < 10; j++)
-                                                                                                                {
-                                                                                                                    if (scores[j] == 0) continue;                                                       // skip 0 values for score
-                                                                                                                    Debug.Log(names[j] + " " + scores[j] + "\n");                                       // Display the names and scores in Unity console
-                                                                                                                }
-
-                                                                                                                int n = 11, tempScore = 0;
-                                                                                                                string tempName = "";
-
-                                                                                                                scores[10] = currentScore;                                                              // Set the 11th score to the current score
-                                                                                                                names[10] = System.Text.RegularExpressions.Regex.Replace(nameEntered, @"\t|\n|\r", ""); // remove new line character
-
-                                                                                                                Debug.Log("\nAdded current name and score:\n");
-                                                                                                                for (int s = 0; s < 11; s++)
-                                                                                                                {
-                                                                                                                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");                            // Check the current name and score is added
-                                                                                                                }
-
-                                                                                                                Debug.Log("\nCurrent Name and Score: " + nameEntered + currentScore);
-
-                                                                                                                // Swap the scores
-                                                                                                                for (int x = 1; x < n; x++)                                                             // Check all the scores
-                                                                                                                {
-                                                                                                                    for (int y = 0; y < n - x; y++)                                                     // Against every other score
-                                                                                                                    {
-                                                                                                                        if (scores[y] < scores[y + 1])                                                  // Sorting the largest score first
-                                                                                                                        {
-                                                                                                                            tempScore = scores[y];                                                      // Do swapping
-                                                                                                                            tempName = names[y];
-
-                                                                                                                            scores[y] = scores[y + 1];
-                                                                                                                            names[y] = names[y + 1];
-
-                                                                                                                            scores[y + 1] = tempScore;
-                                                                                                                            names[y + 1] = tempName;
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
-
-                                                                                                                Debug.Log("\nSorted High Scores:\n");
-                                                                                                                for (int s = 0; s < 11; s++)                                                            // Check the scores are sorted correctly
-                                                                                                                {
-                                                                                                                    if (scores[s] == 0) continue;                                                       // skip 0 values for score
-                                                                                                                    Debug.Log(s + ". " + names[s] + " " + scores[s] + "\n");                            // Display the name and score
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                        */
+        int[] scores = new int[11];                                                                         // Array of high scores
+        string[] names = new string[11];                                                                    // Array of names for high scores
 
         DisplayHighScores(scores, names);                                                                   // Read and display the high scores table
 
@@ -306,8 +278,7 @@ public class GameController : MonoBehaviour {
             }
         }
     }
-
-    
+        
     // From text adventure tutorial
     public void LogStringWithReturn(string stringToAdd)
     {
@@ -318,8 +289,8 @@ public class GameController : MonoBehaviour {
     {
         // string logAsText = string.Join("\n", actionLog.ToArray());
         nameEntered = string.Join("\n", actionLog.ToArray());
-        displayText.text = nameEntered;                                                                     // Set the name at the top of the screen to the name entered
+        displayName.text = nameEntered;                                      // Set the name at the top of the screen to the name entered
 
-        gameOverText.text = "";                                                                             // Update the game over text
+        gameOverText.text = "";                                              // Update the game over text
     }
 }
