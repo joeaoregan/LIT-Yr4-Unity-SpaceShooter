@@ -1,5 +1,8 @@
-# BSc Computing (Games Design and Development)
-## Programming Digital Game Engines
+# Programming Digital Game Engines
+## Joe O'Regan (K00203642)
+### Year 4 (2017/18), Semester 7
+#### BSc Computing (Games Design and Development)
+##### Limerick Institute of Technology
 
 ---
 
