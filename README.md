@@ -12,7 +12,7 @@
 
 ## Space Shooter
 
-[Play Game](https://joeaoregan.github.io/LIT-Yr4-Unity-SpaceShooter)
+[Play Game on GitHub Pages](https://joeaoregan.github.io/LIT-Yr4-Unity-SpaceShooter)
 
 ## References
 
